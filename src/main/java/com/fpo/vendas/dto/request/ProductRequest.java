@@ -23,7 +23,7 @@ public record ProductRequest(
         @NotBlank(message = "O tipo do produto (PERISHABLE ou NON_PERISHABLE) é obrigatório.")
         String type,
 
-        // Campos opcionais dependendo do subtipo (LSP/Flexibilidade)
+        // Campos opcionais dependendo do subtipo
         LocalDate expirationDate,
         Integer warrantyMonths
 ) {

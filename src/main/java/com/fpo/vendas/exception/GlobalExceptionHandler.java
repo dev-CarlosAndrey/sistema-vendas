@@ -14,7 +14,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handles HTTP 404 - Resource Not Found
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -25,7 +24,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
-    // 🎯 EXCLUSIVO DO PDF: Handles HTTP 422 - Insufficient Stock
     @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<Map<String, Object>> handleInsufficientStock(InsufficientStockException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -36,7 +34,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
     }
 
-    // ✨ NOVO: Handles HTTP 422 - Outras Regras de Negócio (Garantia, Validade, Estratégias, etc.)
     @ExceptionHandler({BusinessException.class, IllegalStateException.class})
     public ResponseEntity<Map<String, Object>> handleBusinessErrors(RuntimeException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -47,7 +44,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
     }
 
-    // Handles HTTP 400 - Bad Request (Bean Validation)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -66,7 +62,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    // Trata erros de conversão de dados (ex: enviar texto/data onde se espera um número)
     @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadable(org.springframework.http.converter.HttpMessageNotReadableException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -76,8 +71,7 @@ public class GlobalExceptionHandler {
         body.put("timestamp", LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
-
-    // Trata erros de integridade do banco (ex: deletar um produto que possui estoque ou vendas vinculadas)
+    
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex) {
         Map<String, Object> body = new HashMap<>();

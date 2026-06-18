@@ -30,4 +30,11 @@ public class SaleItem {
 
     @Column(name = "unit_price", nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
+
+    public BigDecimal getSubtotal() {
+        if (this.unitPrice == null || this.quantity == null) {
+            return BigDecimal.ZERO;
+        }
+        return this.unitPrice.multiply(BigDecimal.valueOf(this.quantity));
+    }
 }

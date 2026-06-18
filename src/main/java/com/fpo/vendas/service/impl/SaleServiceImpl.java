@@ -1,10 +1,10 @@
 package com.fpo.vendas.service.impl;
 
 import com.fpo.vendas.dto.request.SaleRequest;
-import com.fpo.vendas.dto.response.SaleItemResponse;
 import com.fpo.vendas.dto.response.SaleResponse;
 import com.fpo.vendas.exception.BusinessException;
 import com.fpo.vendas.exception.ResourceNotFoundException;
+import com.fpo.vendas.mapper.SaleMapper; // 1. Importa o seu Mapper
 import com.fpo.vendas.model.Client;
 import com.fpo.vendas.model.Product;
 import com.fpo.vendas.model.Sale;
@@ -32,7 +32,7 @@ public class SaleServiceImpl implements ISaleService {
     private final ClientRepository clientRepository;
     private final ProductRepository productRepository;
     private final IStockService stockService;
-
+    private final SaleMapper saleMapper;
     private final Map<String, SalesCalculator> calculatorStrategies;
 
     @Override
@@ -66,7 +66,7 @@ public class SaleServiceImpl implements ISaleService {
             SaleItem item = SaleItem.builder()
                     .product(product)
                     .quantity(itemReq.quantity())
-                    .unitPrice(product.getPrice()) // Salva o preço histórico da venda
+                    .unitPrice(product.getPrice())
                     .build();
 
             sale.addItem(item);
@@ -76,37 +76,17 @@ public class SaleServiceImpl implements ISaleService {
         BigDecimal totalCalculated = calculator.calculateTotal(sale.getItems());
         sale.setTotalValue(totalCalculated);
 
-        // 6. Salva tudo em cascata no banco PostgreSQL
+        // 6. Salva tudo em cascata no banco
         Sale savedSale = saleRepository.save(sale);
 
-        return mapToResponse(savedSale);
+        return saleMapper.toResponse(savedSale);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SaleResponse> findAll() {
         return saleRepository.findAll().stream()
-                .map(this::mapToResponse)
+                .map(saleMapper::toResponse) // 8. Transforma de forma ultra limpa usando Method Reference
                 .toList();
-    }
-
-    private SaleResponse mapToResponse(Sale sale) {
-        List<SaleItemResponse> itemResponses = sale.getItems().stream()
-                .map(item -> new SaleItemResponse(
-                        item.getProduct().getId(),
-                        item.getProduct().getName(),
-                        item.getQuantity(),
-                        item.getUnitPrice(),
-                        item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
-                )).toList();
-
-        return new SaleResponse(
-                sale.getId(),
-                sale.getClient().getId(),
-                sale.getClient().getName(),
-                sale.getSaleDate(),
-                sale.getTotalValue(),
-                itemResponses
-        );
     }
 }

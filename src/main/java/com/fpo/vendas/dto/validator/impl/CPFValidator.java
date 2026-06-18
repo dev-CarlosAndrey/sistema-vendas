@@ -7,7 +7,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class CPFValidator implements ConstraintValidator<CPF, String> {
     @Override
     public boolean isValid(String cpf, ConstraintValidatorContext context) {
-        if (cpf == null) return true; // Deixa o @NotBlank cuidar do nulo
+        if (cpf == null) return true;
 
         // Remove pontos e traços caso o cliente envie formatado
         cpf = cpf.replaceAll("\\D", "");
