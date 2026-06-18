@@ -24,7 +24,7 @@ public class StockServiceImpl implements IStockService {
     @Transactional(readOnly = true)
     public StockResponse findByProductId(Long productId) {
         Stock stock = stockRepository.findByProductId(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Stock record for product ID " + productId + " not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de estoque para o ID do produto " + productId + " não foi encontrado."));
         return new StockResponse(stock.getProduct().getId(), stock.getProduct().getName(), stock.getQuantity());
     }
 
@@ -32,7 +32,7 @@ public class StockServiceImpl implements IStockService {
     @Transactional
     public StockResponse updateQuantity(Long productId, StockUpdateRequest request) {
         Stock stock = stockRepository.findByProductId(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Stock record for product ID " + productId + " not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Registro de estoque para o ID do produto " + productId + " não foi encontrado."));
 
         stock.setQuantity(request.quantity());
         Stock updated = stockRepository.save(stock);
@@ -43,15 +43,15 @@ public class StockServiceImpl implements IStockService {
     @Transactional
     public void decrementStock(Long productId, Integer quantity) {
         Stock stock = stockRepository.findByProductId(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product ID " + productId + " has no stock registry."));
+                .orElseThrow(() -> new ResourceNotFoundException("O produto com ID " + productId + " não possui registro de estoque."));
 
-        // LSP Contract Verification: Polymorphic behavior checking for expiration dates or restrictions
+        // Verificação do Contrato LSP: Comportamento polimórfico validando datas de validade ou restrições
         if (stock.getProduct().hasSalesRestriction()) {
             throw new BusinessException("O produto '" + stock.getProduct().getName() + "' possui restrições de venda (ex: Data de validade vencida).");
         }
 
         if (stock.getQuantity() < quantity) {
-            throw new InsufficientStockException("Produto '" + stock.getProduct().getName() + "' possui apenas " + stock.getQuantity() + " unidade(s) em estoque.");
+            throw new InsufficientStockException("O produto '" + stock.getProduct().getName() + "' possui apenas " + stock.getQuantity() + " unidade(s) em estoque.");
         }
 
         stock.setQuantity(stock.getQuantity() - quantity);

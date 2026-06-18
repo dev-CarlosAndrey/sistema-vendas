@@ -40,12 +40,12 @@ public class SaleServiceImpl implements ISaleService {
     public SaleResponse executeSale(SaleRequest request) {
         // 1. Validar Cliente
         Client client = clientRepository.findById(request.clientId())
-                .orElseThrow(() -> new ResourceNotFoundException("Client with ID " + request.clientId() + " not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente com o ID " + request.clientId() + " não foi encontrado."));
 
         // 2. Validar Estratégia de Desconto
         SalesCalculator calculator = calculatorStrategies.get(request.discountType().toUpperCase());
         if (calculator == null) {
-            throw new BusinessException("Discount strategy '" + request.discountType() + "' is not implemented.");
+            throw new BusinessException("A estratégia de desconto '" + request.discountType() + "' não está implementada.");
         }
 
         // 3. Criar Cabeçalho da Venda
@@ -58,7 +58,7 @@ public class SaleServiceImpl implements ISaleService {
         // 4. Processar itens, validar regras polimórficas (LSP) e dar baixa no estoque (SRP)
         for (var itemReq : request.items()) {
             Product product = productRepository.findById(itemReq.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product with ID " + itemReq.productId() + " not found."));
+                    .orElseThrow(() -> new ResourceNotFoundException("Produto com o ID " + itemReq.productId() + " não foi encontrado."));
 
             // Executa internamente o decremento de estoque e a validação se o produto está vencido
             stockService.decrementStock(product.getId(), itemReq.quantity());
@@ -76,7 +76,7 @@ public class SaleServiceImpl implements ISaleService {
         BigDecimal totalCalculated = calculator.calculateTotal(sale.getItems());
         sale.setTotalValue(totalCalculated);
 
-        // 6. Salva tudo em cascata no banco PostgreSQL do Supabase
+        // 6. Salva tudo em cascata no banco PostgreSQL
         Sale savedSale = saleRepository.save(sale);
 
         return mapToResponse(savedSale);
@@ -109,5 +109,4 @@ public class SaleServiceImpl implements ISaleService {
                 itemResponses
         );
     }
-
 }

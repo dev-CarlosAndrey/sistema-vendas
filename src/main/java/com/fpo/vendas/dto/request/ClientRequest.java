@@ -1,19 +1,19 @@
 package com.fpo.vendas.dto.request;
 
+import com.fpo.vendas.dto.validator.CPF;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 public record ClientRequest(
-        @NotBlank(message = "Name is required.")
+        @NotBlank(message = "O nome é obrigatório.")
         String name,
 
-        @NotBlank(message = "Email is required.")
-        @Email(message = "Invalid email format.")
+        @NotBlank(message = "O e-mail é obrigatório.")
+        @Email(message = "O formato do e-mail é inválido.")
         String email,
 
-        @NotBlank(message = "CPF is required.")
-        @Pattern(regexp = "\\d{11}", message = "CPF must contain exactly 11 digits.")
+        @NotBlank(message = "O CPF é obrigatório.")
+        @CPF(message = "O CPF fornecido é matematicamente inválido.")
         String cpf,
 
         String phone

@@ -8,22 +8,22 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record ProductRequest(
-        @NotBlank(message = "Product name is required.")
+        @NotBlank(message = "O nome do produto é obrigatório.")
         String name,
 
         String description,
 
-        @NotNull(message = "Price is required.")
-        @Positive(message = "Price must be greater than zero.")
+        @NotNull(message = "O preço é obrigatório.")
+        @Positive(message = "O preço deve ser maior que zero.")
         BigDecimal price,
 
-        @NotBlank(message = "Category is required.")
+        @NotBlank(message = "A categoria é obrigatória.")
         String category,
 
-        @NotBlank(message = "Product type (PERISHABLE or NON_PERISHABLE) is required.")
+        @NotBlank(message = "O tipo do produto (PERISHABLE ou NON_PERISHABLE) é obrigatório.")
         String type,
 
-        // Optional fields depending on the subtype (LSP/Flexibility)
+        // Campos opcionais dependendo do subtipo (LSP/Flexibilidade)
         LocalDate expirationDate,
         Integer warrantyMonths
 ) {

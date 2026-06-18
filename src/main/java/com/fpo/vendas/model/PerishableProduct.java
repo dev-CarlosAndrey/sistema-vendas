@@ -17,7 +17,7 @@ public class PerishableProduct extends Product {
 
     @Override
     public boolean hasSalesRestriction() {
-        // LSP in action: changes behavior safely based on contract
+        //LSP: altera o comportamento de forma segura com base no contrato
         return expirationDate != null && expirationDate.isBefore(LocalDate.now());
     }
 }

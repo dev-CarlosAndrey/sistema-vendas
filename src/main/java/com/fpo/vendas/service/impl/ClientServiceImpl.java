@@ -25,10 +25,10 @@ public class ClientServiceImpl implements IClientService {
     @Transactional
     public ClientResponse create(ClientRequest clientRequest) {
         if (clientRepository.existsByCpf(clientRequest.cpf())) {
-            throw new BusinessException("A client with this CPF already exists.");
+            throw new BusinessException("Já existe um cliente cadastrado com este CPF.");
         }
         if (clientRepository.existsByEmail(clientRequest.email())) {
-            throw new BusinessException("A client with this email already exists.");
+            throw new BusinessException("Já existe um cliente cadastrado com este e-mail.");
         }
 
         Client client = clientMapper.toEntity(clientRequest);
@@ -40,7 +40,7 @@ public class ClientServiceImpl implements IClientService {
     @Transactional(readOnly = true)
     public ClientResponse findById(Long id) {
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client with ID " + id + " not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente com o ID " + id + " não foi encontrado."));
         return clientMapper.toResponse(client);
     }
 
@@ -56,12 +56,12 @@ public class ClientServiceImpl implements IClientService {
     @Transactional
     public ClientResponse update(Long id, ClientRequest request) {
         Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Client with ID " + id + " not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente com o ID " + id + " não foi encontrado."));
 
-        // Validate duplicates excluding the current client's records
+        // Valida duplicidade excluindo os registros do próprio cliente atual
         clientRepository.findByCpf(request.cpf()).ifPresent(existing -> {
             if (!existing.getId().equals(id)) {
-                throw new BusinessException("This CPF is already taken by another client.");
+                throw new BusinessException("Este CPF já está sendo utilizado por outro cliente.");
             }
         });
 
@@ -77,7 +77,7 @@ public class ClientServiceImpl implements IClientService {
     @Transactional
     public void delete(Long id) {
         if (!clientRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Client with ID " + id + " not found.");
+            throw new ResourceNotFoundException("Cliente com o ID " + id + " não foi encontrado.");
         }
         clientRepository.deleteById(id);
     }
